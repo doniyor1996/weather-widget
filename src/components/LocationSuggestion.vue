@@ -1,16 +1,13 @@
 <template>
   <div>
-    <b>#{{ item.id }}</b>
-    <span>{{ item.name }}</span>
+    <span>{{ item.name }}, {{ item.country }}</span>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
+export default {
   props: {
     item: { required: true }
   }
-});
+};
 </script>

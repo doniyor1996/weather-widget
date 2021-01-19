@@ -10,7 +10,7 @@
         <span>{{ location.name }}</span>
       </div>
       <div>
-        <DeleteIcon class="icon big" />
+        <DeleteIcon class="icon big" @click="deleteLocation(location.id)" />
       </div>
     </div>
     <AddLocation />
@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import HamburgerIcon from "@/assets/hamburger.svg";
 import DeleteIcon from "@/assets/delete.svg";
 import AddLocation from "@/components/AddLocation.vue";
@@ -29,6 +29,9 @@ export default Vue.extend({
   components: { AddLocation, HamburgerIcon, DeleteIcon },
   computed: {
     ...mapGetters(["locations"])
+  },
+  methods: {
+    ...mapActions(["deleteLocation"])
   }
 });
 </script>

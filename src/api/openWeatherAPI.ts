@@ -38,7 +38,7 @@ export interface WeatherLocation {
 
 function formatResponse(response: any) {
   const location: WeatherLocation = {
-    id: 0,
+    id: response.id,
     order: 0,
     name: response.name,
     coord: response.coord,
@@ -62,13 +62,33 @@ export const weatherAPI = {
     });
     return formatResponse(response.data);
   },
-  getByName: async (name: string) => {
+  getById: async (id: number) => {
     const response = await _axios.get("weather", {
+      params: {
+        ...API_KEY_PARAM,
+        id
+      }
+    });
+    return formatResponse(response.data);
+  },
+  getByName: async (name: string, countryCode: string) => {
+    const response = await _axios.get("weather", {
+      params: {
+        ...API_KEY_PARAM,
+        q: `${name},${countryCode}`
+      }
+    });
+    return formatResponse(response.data);
+  },
+  findByName: async (name: string) => {
+    const response = await _axios.get("find", {
       params: {
         ...API_KEY_PARAM,
         q: name
       }
     });
-    return formatResponse(response.data);
+    return response.data.list.map((item: WeatherLocation) =>
+      formatResponse(item)
+    );
   }
 };
