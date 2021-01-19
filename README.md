@@ -15,6 +15,12 @@ yarn serve
 yarn build
 ```
 
+
+### Build web-component widget
+```
+yarn build-widget
+```
+
 ### Lints and fixes files
 ```
 yarn lint
