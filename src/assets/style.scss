@@ -18,6 +18,16 @@
 .vue-suggestion {
   width: 100%;
 
+  .vs__list {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+    margin-top: -3px;
+    background: #fff;
+  }
+
   .vs__input-group input {
     display: block;
     width: 100%;
