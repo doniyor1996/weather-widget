@@ -1,6 +1,20 @@
 <template>
   <div class="locations">
     <div class="location" v-for="location in locations" :key="location.id">
+      <div class="d-flex justify-content-between">
+        <img
+          :src="
+            `https://openweathermap.org/img/wn/${location.weather.icon}@2x.png`
+          "
+        />
+        <span>{{ location.main.temp }}°C</span>
+      </div>
+      <div>
+        Feels like {{ location.main.feels_like }}°C.
+        <span style="text-transform: capitalize">{{
+          location.weather.description
+        }}</span>
+      </div>
       {{ location.name }}
     </div>
   </div>
@@ -18,20 +32,4 @@ export default Vue.extend({
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+<style scoped lang="scss"></style>

@@ -1,36 +1,26 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import { weatherAPI } from "@/api/openWeatherAPI";
+import { weatherAPI, WeatherLocation } from "@/api/openWeatherAPI";
 
 Vue.use(Vuex);
 
-interface Location {
-  id: number;
-  order: number;
-  coord?: {
-    lon: number;
-    lat: number;
-  };
-  name: string;
-  info: object;
-}
-
-const locations: Location[] = [];
+const locations: WeatherLocation[] = [];
 
 export default new Vuex.Store({
   state: {
     lastSync: 0,
     id: 0,
     locations,
-    appLabel: "state app label::"
+    showSettings: false
   },
   getters: {
     locations: state => state.locations,
-    lastSync: state => state.lastSync
+    lastSync: state => state.lastSync,
+    showSettings: state => state.showSettings
   },
   mutations: {
-    ADD_LOCATION(state, location: Location) {
+    ADD_LOCATION(state, location: WeatherLocation) {
       ++state.id;
       location.id = state.id;
       location.order = state.locations.length;
@@ -39,18 +29,23 @@ export default new Vuex.Store({
     UPDATE_LAST_SYNC(state) {
       state.lastSync = new Date().getTime();
     },
-    UPDATE_LOCATION_INFO(state, { locationID, info }) {
-      state.locations = state.locations.map(location => {
-        if (location.id === locationID) {
-          location.info = info;
-          location.name = info.name + ", " + info.sys.country;
+    TOGGLE_SETTINGS(state) {
+      state.showSettings = !state.showSettings;
+    },
+    UPDATE_LOCATION_INFO(state, { locationID, location }) {
+      state.locations = state.locations.map(l => {
+        if (l.id === locationID) {
+          l = { ...location };
         }
-        return location;
+        return l;
       });
     }
   },
   actions: {
-    addLocation({ commit, dispatch }, location: Location) {
+    toggleSettings({ commit }) {
+      commit("TOGGLE_SETTINGS");
+    },
+    addLocation({ commit, dispatch }, location: WeatherLocation) {
       commit("ADD_LOCATION", location);
       dispatch("syncWeatherInfo");
     },
@@ -58,9 +53,10 @@ export default new Vuex.Store({
       state.locations.forEach(location => {
         if (location.name)
           weatherAPI.getByName(location.name).then(response => {
+            console.log(response);
             commit("UPDATE_LOCATION_INFO", {
               locationID: location.id,
-              info: response
+              location: response
             });
           });
         else if (location.coord)
@@ -72,15 +68,11 @@ export default new Vuex.Store({
             .then(response => {
               commit("UPDATE_LOCATION_INFO", {
                 locationID: location.id,
-                info: response
+                location: response
               });
             });
       });
       commit("UPDATE_LAST_SYNC");
-    },
-    updateForce({ commit, dispatch }) {
-      commit("UPDATE_LAST_SYNC");
-      dispatch("syncWeatherInfo");
     }
   },
   modules: {},

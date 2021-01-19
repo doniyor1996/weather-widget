@@ -1,26 +1,15 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="app-header d-flex justify-content-between">
-        <div>{{ appTitle }}</div>
-        <div class="d-flex">
-          <div @click="updateForce" class="mr-2" :title="syncAt">
-            <RefreshSVG class="icon" />
-          </div>
-          <div>
-            <SettingSVG class="icon" />
-          </div>
-        </div>
+      <AppHeader />
+
+      <div class="widget-body">
+        <WeatherInfo v-show="!showSettings" />
+        <Settings v-if="showSettings" />
       </div>
 
-      <WeatherInfo />
-
       <div>
-        Icons made by
-        <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
-          >Freepik</a
-        >
-        from
+        Icons from
         <a href="https://www.flaticon.com/" title="Flaticon"
           >www.flaticon.com</a
         >
@@ -33,85 +22,63 @@
 import Vue from "vue";
 import store from "./store";
 import WeatherInfo from "@/components/WeatherInfo.vue";
-import { SyncInterval, APP_TITLE } from "@/appConstants";
 import { mapActions, mapGetters } from "vuex";
-import SettingSVG from "@/assets/settings.svg";
-import RefreshSVG from "@/assets/refresh.svg";
+import { weatherAPI } from "@/api/openWeatherAPI";
+import Settings from "@/components/Settings.vue";
+import VueSuggestion from "vue-suggestion";
+import AppHeader from "@/components/AppHeader.vue";
+
+Vue.use(VueSuggestion);
 
 export default Vue.extend({
   store,
   name: "App",
   components: {
-    WeatherInfo,
-    SettingSVG,
-    RefreshSVG
-  },
-  data() {
-    return {
-      syncAt: "",
-      appTitle: APP_TITLE
-    };
+    AppHeader,
+    Settings,
+    WeatherInfo
   },
   computed: {
-    ...mapGetters(["locations", "lastSync"])
+    ...mapGetters(["locations", "showSettings"])
   },
   methods: {
-    ...mapActions(["addLocation", "syncWeatherInfo", "updateForce"]),
-    updateSyncText() {
-      const time = new Date().getTime() - this.lastSync;
-      const minutesAgo = new Date(time).getMinutes();
-      this.syncAt =
-        minutesAgo <= 1
-          ? "Recently updated"
-          : `Updated ${minutesAgo} minutes ago`;
-    }
+    ...mapActions(["addLocation", "syncWeatherInfo"])
   },
   mounted() {
     if (this.locations.length === 0) {
       navigator.geolocation.getCurrentPosition(p => {
-        this.addLocation({
-          coord: {
+        weatherAPI
+          .getByCoordinates({
             lat: p.coords.latitude,
             lon: p.coords.longitude
-          }
-        });
+          })
+          .then(response => {
+            this.addLocation(response);
+          });
       });
     } else {
       this.syncWeatherInfo();
-      setInterval(() => {
-        this.syncWeatherInfo();
-      }, SyncInterval);
-    }
-
-    this.updateSyncText();
-    setInterval(() => {
-      this.updateSyncText();
-    }, 5000);
-  },
-  watch: {
-    lastSync() {
-      this.updateSyncText();
+      // setInterval(() => {
+      //   this.syncWeatherInfo();
+      // }, SyncInterval);
     }
   }
 });
 </script>
 
 <style lang="scss" scoped>
+@import "assets/variables";
+
 #app {
   width: 100%;
   max-width: 500px;
   padding: 10px;
 }
 
-.app-header {
-  background-color: #f7f7f7;
-  padding: 5px;
-  border-radius: 10px 10px 0 0;
-}
-
-.icon {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+.widget-body {
+  height: 100%;
+  min-height: 480px;
+  max-height: 680px;
+  overflow-y: auto;
 }
 </style>
