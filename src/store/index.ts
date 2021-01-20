@@ -60,7 +60,6 @@ export default new Vuex.Store({
       state.locations.forEach(location => {
         if (location.name)
           weatherAPI.getById(location.id).then(response => {
-            console.log(response);
             commit("UPDATE_LOCATION_INFO", {
               location: response
             });

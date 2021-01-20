@@ -4,7 +4,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  
+
   &.move-cursor {
     cursor: move;
   }
@@ -41,10 +41,31 @@
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
     &:focus {
       outline: none;
     }
   }
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #fff
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $gray
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $gray
 }
